@@ -25,10 +25,14 @@ public class Lecture {
     }
 
     public boolean addListener() {
-        if (listenersCount >= MAX_LISTENERS_COUNT) {
+        if (isFull()) {
             return false;
         }
         listenersCount++;
         return true;
+    }
+
+    public boolean isFull() {
+        return listenersCount == MAX_LISTENERS_COUNT;
     }
 }
