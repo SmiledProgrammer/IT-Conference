@@ -10,6 +10,9 @@ public class Lecture {
 
     public static final int MAX_LISTENERS_COUNT = 5;
 
+    private static long currentId = 0;
+
+    private final long id;
     private final String title;
     private final ContentTrack contentTrack;
     private final LocalTime startTime;
@@ -17,6 +20,7 @@ public class Lecture {
     private int listenersCount;
 
     public Lecture(String title, ContentTrack contentTrack, LocalTime startTime) {
+        this.id = currentId++;
         this.title = title;
         this.contentTrack = contentTrack;
         this.listenersCount = 0;

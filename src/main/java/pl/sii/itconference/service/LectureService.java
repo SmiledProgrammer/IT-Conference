@@ -46,15 +46,15 @@ public class LectureService {
     public List<Lecture> getUsersLectures(@NotBlank String username) {
         User user = userService.getUserByUsername(username);
         return user.getParticipations().stream()
-                .map(p -> lecturesList.get(p.getLectureId()))
+                .map(p -> getLectureById(p.getLectureId()))
                 .toList();
     }
 
     public void addListenerToLecture(int lectureId) {
-        Lecture lecture = lecturesList.get(lectureId);
+        Lecture lecture = getLectureById(lectureId);
         if (lecture == null) {
-            log.error("addListenerToLecture() called but couldn't find lecture with ID of {}.", lecture);
-            throw new ResourceNotFoundException("Couldn't find lecture.");
+            log.error("addListenerToLecture() called but couldn't find lecture with ID of {}.", lectureId);
+            throw new ResourceNotFoundException("Couldn't find lecture with this ID.");
         }
         boolean success = lecture.addListener();
         if (!success) {
@@ -62,5 +62,11 @@ public class LectureService {
             throw new BadRequestException("The lecture is already full.");
         }
         log.info("addListenerToLecture() called successfully.");
+    }
+
+    private Lecture getLectureById(long id) {
+        return lecturesList.stream()
+                .filter(l -> l.getId() == id)
+                .findFirst().orElse(null);
     }
 }
