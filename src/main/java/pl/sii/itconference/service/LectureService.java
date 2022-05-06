@@ -40,6 +40,10 @@ public class LectureService {
         lecturesList.add(new Lecture("Is UX really that important?", ContentTrack.UX, LocalTime.of(14, 0)));
     }
 
+    public List<Lecture> getLectures() {
+        return getLectures(null);
+    }
+
     public List<Lecture> getLectures(String username) {
         if (username == null) {
             log.info("getLectures() called successfully.");
