@@ -8,6 +8,7 @@ import pl.sii.itconference.entity.User;
 import pl.sii.itconference.exception.DuplicateUsernameException;
 import pl.sii.itconference.exception.ResourceNotFoundException;
 import pl.sii.itconference.repo.UserRepository;
+import pl.sii.itconference.utils.StringUtils;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -56,19 +57,19 @@ public class UserService {
         }
         User user = userOptional.get();
 
-        if (dto.getUsername() != null && !dto.getUsername().isBlank()) {
+        if (StringUtils.isNotBlank(dto.getUsername())) {
             if (userRepository.findUserByUsername(dto.getUsername()).isPresent()) {
                 log.error("updateUser() called but there was already a user with \"{}\" username.", username);
                 throw new ResourceNotFoundException("There is already a user with this username.");
             }
             user.setUsername(dto.getUsername());
         }
-        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+        if (StringUtils.isNotBlank(dto.getEmail())) {
             user.setEmail(dto.getEmail());
         }
-        userRepository.save(user);
+        User userRecord = userRepository.save(user);
         log.info("updateUser() called successfully.");
-        return mapEntityToDto(user);
+        return mapEntityToDto(userRecord);
     }
 
     private UserDto mapEntityToDto(User user) {

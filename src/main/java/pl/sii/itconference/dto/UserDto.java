@@ -9,7 +9,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @AllArgsConstructor
 public class UserDto {
-
     @NotBlank
     private String username;
 
