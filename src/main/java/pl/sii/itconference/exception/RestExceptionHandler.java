@@ -1,11 +1,13 @@
 package pl.sii.itconference.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@Slf4j
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -25,7 +27,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiError> handleAnyException() {
+    public ResponseEntity<ApiError> handleAnyException(RuntimeException ex) {
+        log.error("{} - {}", ex.getClass().getName(), ex.getMessage());
         return createErrorResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error.");
     }
 

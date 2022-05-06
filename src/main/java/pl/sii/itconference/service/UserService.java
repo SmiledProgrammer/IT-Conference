@@ -22,7 +22,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (!email.equals(user.getEmail())) {
-                log.info("forceGetUser() called but email \"{}\" belonging to username \"{}\" was different than the given \"{}\" email.",
+                log.error("forceGetUser() called but email \"{}\" belonging to username \"{}\" was different than the given \"{}\" email.",
                         user.getEmail(), username, email);
                 throw new DuplicateUsernameException("There is already a user with this username.");
             }
@@ -39,7 +39,7 @@ public class UserService {
     public User getUserByUsername(String username) {
         Optional<User> userOptional = userRepository.findUserByUsername(username);
         if (userOptional.isEmpty()) {
-            log.info("getUserByUsername() called but couldn't find user with \"{}\" username.", username);
+            log.error("getUserByUsername() called but couldn't find user with \"{}\" username.", username);
             throw new ResourceNotFoundException("Couldn't find user with this username.");
         }
         log.info("getUserByUsername() called successfully.");

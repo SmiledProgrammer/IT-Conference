@@ -19,9 +19,9 @@ public class Participation {
     private User user;
 
     @Column(nullable = false)
-    private Integer lectureId;
+    private Long lectureId;
 
-    public Participation(User user, Integer lectureId) {
+    public Participation(User user, Long lectureId) {
         this.user = user;
         this.lectureId = lectureId;
     }

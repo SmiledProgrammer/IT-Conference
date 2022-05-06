@@ -5,10 +5,14 @@ import org.springframework.stereotype.Repository;
 import pl.sii.itconference.entity.Participation;
 import pl.sii.itconference.entity.User;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Repository
 public interface ParticipationRepository extends JpaRepository<Participation, Long> {
 
-    Optional<Participation> findByLectureIdAndUser(Integer lectureId, User user);
+    Optional<Participation> findByLectureIdAndUser(Long lectureId, User user);
+
+    @Transactional
+    void deleteByLectureIdAndUser(Long lectureId, User user);
 }

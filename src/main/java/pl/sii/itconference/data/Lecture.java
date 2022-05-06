@@ -36,6 +36,14 @@ public class Lecture {
         return true;
     }
 
+    public boolean removeListener() {
+        if (listenersCount == 0) {
+            return false;
+        }
+        listenersCount--;
+        return true;
+    }
+
     public boolean isFull() {
         return listenersCount == MAX_LISTENERS_COUNT;
     }

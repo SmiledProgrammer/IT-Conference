@@ -50,26 +50,41 @@ public class LectureService {
                 .toList();
     }
 
-    public void addListenerToLecture(int lectureId) {
+    public void addListenerToLecture(long lectureId) {
         Lecture lecture = getNullableLecture(lectureId);
         if (lecture == null) {
-            log.info("addListenerToLecture() called but couldn't find lecture with ID of {}.", lectureId);
+            log.error("addListenerToLecture() called but couldn't find lecture with ID of {}.", lectureId);
             throw new ResourceNotFoundException("Couldn't find lecture with this ID.");
         }
         boolean success = lecture.addListener();
         if (!success) {
-            log.info("addListenerToLecture() called but lecture was already full.");
+            log.error("addListenerToLecture() called but lecture was already full.");
             throw new BadRequestException("The lecture is already full.");
         }
         log.info("addListenerToLecture() called successfully.");
     }
 
+    public void removeListenerFromLecture(long lectureId) {
+        Lecture lecture = getNullableLecture(lectureId);
+        if (lecture == null) {
+            log.error("removeListenerFromLecture() called but couldn't find lecture with ID of {}.", lectureId);
+            throw new ResourceNotFoundException("Couldn't find lecture with this ID.");
+        }
+        boolean success = lecture.removeListener();
+        if (!success) {
+            log.error("removeListenerFromLecture() called but lecture had no listeners.");
+            throw new BadRequestException("The lecture has no listeners.");
+        }
+        log.info("removeListenerFromLecture() called successfully.");
+    }
+
     public Lecture getLecture(long id) {
         Lecture lecture = getNullableLecture(id);
         if (lecture == null) {
-            log.info("getLecture() called but couldn't find lecture with ID of {}.", id);
+            log.error("getLecture() called but couldn't find lecture with ID of {}.", id);
             throw new ResourceNotFoundException("Couldn't find lecture with this ID.");
         }
+        log.info("getLecture() called successfully.");
         return lecture;
     }
 

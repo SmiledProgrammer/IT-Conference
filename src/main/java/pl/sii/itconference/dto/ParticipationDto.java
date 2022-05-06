@@ -13,5 +13,5 @@ public class ParticipationDto {
     private String username;
 
     @NotNull
-    private Integer lectureId;
+    private Long lectureId;
 }

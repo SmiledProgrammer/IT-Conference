@@ -27,12 +27,13 @@ public class ParticipationService {
         User user = userService.forceGetUser(dto.getUsername(), dto.getEmail());
         Optional<Participation> existingParticipation = participationRepository.findByLectureIdAndUser(dto.getLectureId(), user);
         if (existingParticipation.isPresent()) {
-            log.info("createParticipation() called but user with username {} is already signed up for the lecture with ID of {}.",
+            log.error("createParticipation() called but user with username {} is already signed up for the lecture with ID of {}.",
                     dto.getUsername(), dto.getLectureId());
             throw new BadRequestException("User is already signed up for this lecture.");
         }
         if (listenerSignedUpForOtherLecture(user, dto.getLectureId())) {
-            log.info("createParticipation() called but user with username {} is already signed up for other lecture at this time.", dto.getUsername());
+            log.error("createParticipation() called but user with username {} is already signed up for other lecture at this time.",
+                    dto.getUsername());
             throw new BadRequestException("User is already signed up for other lecture at this time.");
         }
         lectureService.addListenerToLecture(dto.getLectureId());
@@ -40,6 +41,13 @@ public class ParticipationService {
         Participation participationRecord = participationRepository.save(newParticipation);
         log.info("createParticipation() called successfully.");
         return mapEntityToDto(participationRecord);
+    }
+
+    public void deleteParticipation(@Valid ParticipationDto dto) {
+        User user = userService.getUserByUsername(dto.getUsername());
+        lectureService.removeListenerFromLecture(dto.getLectureId());
+        participationRepository.deleteByLectureIdAndUser(dto.getLectureId(), user);
+        log.info("deleteParticipation() called successfully.");
     }
 
     private boolean listenerSignedUpForOtherLecture(User user, long lectureId) {

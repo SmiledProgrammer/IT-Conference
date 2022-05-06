@@ -18,5 +18,5 @@ public class CreateParticipationDto {
     private String email;
 
     @NotNull
-    private Integer lectureId;
+    private Long lectureId;
 }
