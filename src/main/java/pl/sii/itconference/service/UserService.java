@@ -14,7 +14,9 @@ import pl.sii.itconference.utils.StringUtils;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +43,10 @@ public class UserService {
             log.info("forceGetUser() called successfully and has created a new user.");
             return userRecord;
         }
+    }
+
+    public List<UserDto> getUsers() {
+        return userRepository.findAll().stream().map(this::mapEntityToDto).toList();
     }
 
     public User getUserByUsername(@NotBlank String username) {
