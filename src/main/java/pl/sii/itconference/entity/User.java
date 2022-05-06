@@ -1,9 +1,6 @@
 package pl.sii.itconference.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -12,6 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @NoArgsConstructor
 public class User {
     @Id
