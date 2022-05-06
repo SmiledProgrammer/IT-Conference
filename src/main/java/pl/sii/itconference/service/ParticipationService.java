@@ -8,11 +8,11 @@ import pl.sii.itconference.dto.ParticipationDto;
 import pl.sii.itconference.entity.Participation;
 import pl.sii.itconference.entity.User;
 import pl.sii.itconference.exception.BadRequestException;
+import pl.sii.itconference.exception.ResourceNotFoundException;
 import pl.sii.itconference.repo.ParticipationRepository;
 
 import javax.validation.Valid;
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,14 +25,13 @@ public class ParticipationService {
 
     public ParticipationDto createParticipation(@Valid CreateParticipationDto dto) {
         User user = userService.forceGetUser(dto.getUsername(), dto.getEmail());
-        Optional<Participation> existingParticipation = participationRepository.findByLectureIdAndUser(dto.getLectureId(), user);
-        if (existingParticipation.isPresent()) {
+        if (participationExists(dto.getLectureId(), user)) {
             log.error("createParticipation() called but user with username {} is already signed up for the lecture with ID of {}.",
                     dto.getUsername(), dto.getLectureId());
             throw new BadRequestException("User is already signed up for this lecture.");
         }
         if (listenerSignedUpForOtherLecture(user, dto.getLectureId())) {
-            log.error("createParticipation() called but user with username {} is already signed up for other lecture at this time.",
+            log.error("createParticipation() called but user with username \"{}\" is already signed up for other lecture at this time.",
                     dto.getUsername());
             throw new BadRequestException("User is already signed up for other lecture at this time.");
         }
@@ -45,9 +44,18 @@ public class ParticipationService {
 
     public void deleteParticipation(@Valid ParticipationDto dto) {
         User user = userService.getUserByUsername(dto.getUsername());
+        if (!participationExists(dto.getLectureId(), user)) {
+            log.error("deleteParticipation() called but couldn't find the participation of user with username \"{}\" in lecture with ID {}.",
+                    dto.getUsername(), dto.getLectureId());
+            throw new ResourceNotFoundException("Couldn't find the participation to delete.");
+        }
         lectureService.removeListenerFromLecture(dto.getLectureId());
         participationRepository.deleteByLectureIdAndUser(dto.getLectureId(), user);
         log.info("deleteParticipation() called successfully.");
+    }
+
+    private boolean participationExists(Long lectureId, User user) {
+        return participationRepository.findByLectureIdAndUser(lectureId, user).isPresent();
     }
 
     private boolean listenerSignedUpForOtherLecture(User user, long lectureId) {
