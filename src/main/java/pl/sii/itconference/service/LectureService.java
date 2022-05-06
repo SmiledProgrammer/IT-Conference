@@ -2,19 +2,21 @@ package pl.sii.itconference.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pl.sii.itconference.data.Lecture;
 import pl.sii.itconference.entity.User;
 import pl.sii.itconference.enums.ContentTrack;
 import pl.sii.itconference.exception.BadRequestException;
 import pl.sii.itconference.exception.ResourceNotFoundException;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
+@Validated
 public class LectureService {
 
     private final UserService userService;
@@ -52,7 +54,7 @@ public class LectureService {
         }
     }
 
-    public void addListenerToLecture(long lectureId) {
+    public void addListenerToLecture(@NotNull Long lectureId) {
         Lecture lecture = getNullableLecture(lectureId);
         if (lecture == null) {
             log.error("addListenerToLecture() called but couldn't find lecture with ID of {}.", lectureId);
@@ -66,7 +68,7 @@ public class LectureService {
         log.info("addListenerToLecture() called successfully.");
     }
 
-    public void removeListenerFromLecture(long lectureId) {
+    public void removeListenerFromLecture(@NotNull Long lectureId) {
         Lecture lecture = getNullableLecture(lectureId);
         if (lecture == null) {
             log.error("removeListenerFromLecture() called but couldn't find lecture with ID of {}.", lectureId);
@@ -80,7 +82,7 @@ public class LectureService {
         log.info("removeListenerFromLecture() called successfully.");
     }
 
-    public Lecture getLecture(long id) {
+    public Lecture getLecture(@NotNull Long id) {
         Lecture lecture = getNullableLecture(id);
         if (lecture == null) {
             log.error("getLecture() called but couldn't find lecture with ID of {}.", id);

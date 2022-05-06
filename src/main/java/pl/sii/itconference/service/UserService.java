@@ -3,6 +3,7 @@ package pl.sii.itconference.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pl.sii.itconference.dto.UserDto;
 import pl.sii.itconference.entity.User;
 import pl.sii.itconference.exception.DuplicateUsernameException;
@@ -11,16 +12,19 @@ import pl.sii.itconference.repo.UserRepository;
 import pl.sii.itconference.utils.StringUtils;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Validated
 public class UserService {
 
     private final UserRepository userRepository;
 
-    public User forceGetUser(String username, String email) {
+    public User forceGetUser(@NotBlank String username, @Email @NotBlank String email) {
         Optional<User> userOptional = userRepository.findUserByUsername(username);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -39,7 +43,7 @@ public class UserService {
         }
     }
 
-    public User getUserByUsername(String username) {
+    public User getUserByUsername(@NotBlank String username) {
         Optional<User> userOptional = userRepository.findUserByUsername(username);
         if (userOptional.isEmpty()) {
             log.error("getUserByUsername() called but couldn't find user with \"{}\" username.", username);
@@ -49,7 +53,7 @@ public class UserService {
         return userOptional.get();
     }
 
-    public UserDto updateUser(String username, @Valid UserDto dto) {
+    public UserDto updateUser(@NotBlank String username, @Valid UserDto dto) {
         Optional<User> userOptional = userRepository.findUserByUsername(username);
         if (userOptional.isEmpty()) {
             log.error("updateUser() called but couldn't find user with \"{}\" username.", username);

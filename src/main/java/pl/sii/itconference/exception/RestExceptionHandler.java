@@ -6,6 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import pl.sii.itconference.utils.StringUtils;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.Set;
 
 @Slf4j
 @RestControllerAdvice
@@ -24,6 +29,24 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex) {
         return createErrorResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex) {
+        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+        StringBuilder msgBuilder = new StringBuilder();
+        for (ConstraintViolation<?> violation : violations) {
+            String[] path = violation.getPropertyPath().toString().split("\\.");
+            String propertyName = StringUtils.capitalize(path[path.length-1]);
+            String violationMsg = propertyName + " " + violation.getMessage();
+            if (!msgBuilder.isEmpty()) {
+                msgBuilder.append("; ");
+            }
+            msgBuilder.append(violationMsg);
+        }
+        String msg = msgBuilder.append(".").toString();
+        log.error("{} - {}", ex.getClass().getName(), msg);
+        return createErrorResponseEntity(HttpStatus.BAD_REQUEST, msg);
     }
 
     @ExceptionHandler(RuntimeException.class)

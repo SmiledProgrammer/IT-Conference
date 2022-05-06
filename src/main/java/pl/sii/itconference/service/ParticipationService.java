@@ -3,6 +3,7 @@ package pl.sii.itconference.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pl.sii.itconference.dto.CreateParticipationDto;
 import pl.sii.itconference.dto.ParticipationDto;
 import pl.sii.itconference.entity.Participation;
@@ -17,6 +18,7 @@ import java.time.LocalTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Validated
 public class ParticipationService {
 
     private final UserService userService;
@@ -35,9 +37,9 @@ public class ParticipationService {
                     dto.getUsername());
             throw new BadRequestException("User is already signed up for other lecture at this time.");
         }
+
         lectureService.addListenerToLecture(dto.getLectureId());
-        Participation newParticipation = new Participation(user, dto.getLectureId());
-        Participation participationRecord = participationRepository.save(newParticipation);
+        Participation participationRecord = participationRepository.save(new Participation(user, dto.getLectureId()));
         log.info("createParticipation() called successfully.");
         return mapEntityToDto(participationRecord);
     }
