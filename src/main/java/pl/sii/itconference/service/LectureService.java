@@ -46,14 +46,14 @@ public class LectureService {
     public List<Lecture> getUsersLectures(@NotBlank String username) {
         User user = userService.getUserByUsername(username);
         return user.getParticipations().stream()
-                .map(p -> getLectureById(p.getLectureId()))
+                .map(p -> getNullableLecture(p.getLectureId()))
                 .toList();
     }
 
     public void addListenerToLecture(int lectureId) {
-        Lecture lecture = getLectureById(lectureId);
+        Lecture lecture = getNullableLecture(lectureId);
         if (lecture == null) {
-            log.error("addListenerToLecture() called but couldn't find lecture with ID of {}.", lectureId);
+            log.info("addListenerToLecture() called but couldn't find lecture with ID of {}.", lectureId);
             throw new ResourceNotFoundException("Couldn't find lecture with this ID.");
         }
         boolean success = lecture.addListener();
@@ -64,7 +64,16 @@ public class LectureService {
         log.info("addListenerToLecture() called successfully.");
     }
 
-    private Lecture getLectureById(long id) {
+    public Lecture getLecture(long id) {
+        Lecture lecture = getNullableLecture(id);
+        if (lecture == null) {
+            log.info("getLecture() called but couldn't find lecture with ID of {}.", id);
+            throw new ResourceNotFoundException("Couldn't find lecture with this ID.");
+        }
+        return lecture;
+    }
+
+    private Lecture getNullableLecture(long id) {
         return lecturesList.stream()
                 .filter(l -> l.getId() == id)
                 .findFirst().orElse(null);

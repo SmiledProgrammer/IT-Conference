@@ -11,6 +11,7 @@ import pl.sii.itconference.exception.BadRequestException;
 import pl.sii.itconference.repo.ParticipationRepository;
 
 import javax.validation.Valid;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Slf4j
@@ -30,11 +31,22 @@ public class ParticipationService {
                     dto.getUsername(), dto.getLectureId());
             throw new BadRequestException("User is already signed up for this lecture.");
         }
+        if (listenerSignedUpForOtherLecture(user, dto.getLectureId())) {
+            log.info("createParticipation() called but user with username {} is already signed up for other lecture at this time.", dto.getUsername());
+            throw new BadRequestException("User is already signed up for other lecture at this time.");
+        }
         lectureService.addListenerToLecture(dto.getLectureId());
         Participation newParticipation = new Participation(user, dto.getLectureId());
         Participation participationRecord = participationRepository.save(newParticipation);
         log.info("createParticipation() called successfully.");
         return mapEntityToDto(participationRecord);
+    }
+
+    private boolean listenerSignedUpForOtherLecture(User user, long lectureId) {
+        LocalTime lectureTime = lectureService.getLecture(lectureId).getStartTime();
+        return user.getParticipations().stream()
+                .anyMatch(p -> lectureService.getLecture(p.getLectureId())
+                        .getStartTime().equals(lectureTime));
     }
 
     private ParticipationDto mapEntityToDto(Participation entity) {
