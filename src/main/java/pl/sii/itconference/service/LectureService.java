@@ -38,16 +38,18 @@ public class LectureService {
         lecturesList.add(new Lecture("Is UX really that important?", ContentTrack.UX, LocalTime.of(14, 0)));
     }
 
-    public List<Lecture> getLectures() {
-        log.info("getLectures() called successfully.");
-        return lecturesList;
-    }
-
-    public List<Lecture> getUsersLectures(@NotBlank String username) {
-        User user = userService.getUserByUsername(username);
-        return user.getParticipations().stream()
-                .map(p -> getNullableLecture(p.getLectureId()))
-                .toList();
+    public List<Lecture> getLectures(String username) {
+        if (username == null) {
+            log.info("getLectures() called successfully.");
+            return lecturesList;
+        } else {
+            User user = userService.getUserByUsername(username);
+            List<Lecture> userLectures = user.getParticipations().stream()
+                    .map(p -> getNullableLecture(p.getLectureId()))
+                    .toList();
+            log.info("getLectures() called successfully.");
+            return userLectures;
+        }
     }
 
     public void addListenerToLecture(long lectureId) {

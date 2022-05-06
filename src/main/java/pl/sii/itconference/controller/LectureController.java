@@ -18,12 +18,7 @@ public class LectureController {
     private final LectureService lectureService;
 
     @GetMapping("/lectures")
-    public ResponseEntity<List<Lecture>> getLectures() {
-        return new ResponseEntity<>(lectureService.getLectures(), HttpStatus.OK);
-    }
-
-    @GetMapping("/users-lectures")
-    public ResponseEntity<List<Lecture>> getUsersLectures(@RequestParam("username") String username) {
-        return new ResponseEntity<>(lectureService.getUsersLectures(username), HttpStatus.OK);
+    public ResponseEntity<List<Lecture>> getLectures(@RequestParam(name = "username", required = false) String username) {
+        return new ResponseEntity<>(lectureService.getLectures(username), HttpStatus.OK);
     }
 }
